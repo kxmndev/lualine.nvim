@@ -57,15 +57,19 @@ local function  loadExtensions()
   end
 end
 
+local function updateTheme()
+  if type(M.theme) == 'string' then
+    M.theme = require('lualine.themes.' .. M.theme)
+    highlight.createHighlightGroups(M.theme)
+  end
+end
+
 local function StatusLine(isFocused)
   local sections = M.sections
   if not isFocused then
     sections = M.inactiveSections
   end
-  if type(M.theme) == 'string' then
-    M.theme = utils.setTheme(M.theme)
-    highlight.createHighlightGroups(M.theme)
-  end
+  updateTheme()
   local status = ''
   if sections.lualine_a ~= nil then
     status = status .. highlight.formatHighlight(isFocused, 'lualine_a')
@@ -98,6 +102,7 @@ end
 function M.status()
   loadComponents()
   loadExtensions()
+  updateTheme()
   _G.statusline = StatusLine
   vim.cmd([[autocmd WinEnter,BufEnter * setlocal statusline=%!v:lua.statusline(1)]])
   vim.cmd([[autocmd WinLeave,BufLeave * setlocal statusline=%!v:lua.statusline()]])
